@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import Card from './Card.jsx';
 import { useMutation, gql } from "@apollo/client";
 
@@ -17,10 +17,6 @@ const ADD_TRACKER = gql`
 
 const Home = ({ tracker, refetchTracker }) => {
    const [name, setName] = useState('')
-
-   useEffect(() => {
-      refetchTracker();
-   }, [tracker]);
 
    const [
       addTrackerInfo,

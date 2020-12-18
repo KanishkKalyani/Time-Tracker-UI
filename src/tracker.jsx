@@ -19,8 +19,8 @@ const Tracker = () => {
 
    useEffect(() => {
       refetch();
-   }, [data]);
-   
+   }, [data, refetch]);
+
    if (loading)   return (
       <div class="d-flex justify-content-center align-items-center add-tracker-spinner">
          <div class="spinner-grow text-primary" role="status">
