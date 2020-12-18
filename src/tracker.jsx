@@ -22,21 +22,21 @@ const Tracker = () => {
    }, [data, refetch]);
 
    if (loading)   return (
-      <div class="d-flex justify-content-center align-items-center add-tracker-spinner">
-         <div class="spinner-grow text-primary" role="status">
-            <span class="sr-only">Loading...</span>
+      <div className="d-flex justify-content-center align-items-center add-tracker-spinner">
+         <div className="spinner-grow text-primary" role="status">
+            <span className="sr-only">Loading...</span>
          </div>
-         <div class="spinner-grow text-success ml-4 mr-4" role="status">
-            <span class="sr-only">Loading...</span>
+         <div className="spinner-grow text-success ml-4 mr-4" role="status">
+            <span className="sr-only">Loading...</span>
          </div>
-         <div class="spinner-grow text-danger" role="status">
-            <span class="sr-only">Loading...</span>
+         <div className="spinner-grow text-danger" role="status">
+            <span className="sr-only">Loading...</span>
          </div>
       </div>
    );
 
    if (error)  return (
-      <div class="d-flex justify-content-center align-items-center error-message">
+      <div className="d-flex justify-content-center align-items-center error-message">
          <h1 className="text-danger">ERROR OCCURED, PLEASE REFRESH THE PAGE</h1>
       </div>
    );

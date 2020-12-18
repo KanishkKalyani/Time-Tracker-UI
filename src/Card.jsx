@@ -80,12 +80,8 @@ const Card = ({cardData, refetchTracker}) => {
       editTagsOfTrack(tempTags);
    };
 
-   const editCardTag = (e, index) => {
-      if(e.target.value) {
-         const tempTags = [...info.tags];
-         tempTags[index] = e.target.value;
-         editTagsOfTrack(tempTags);
-      }
+   const editCardTag = (index) => {
+         editTagsOfTrack(info.tags);
    };
 
    const editStartTime = async () => {
@@ -138,21 +134,21 @@ const Card = ({cardData, refetchTracker}) => {
    return (
       <div className="card" style={{'width': '100%', 'marginTop': '10px'}}>
          { (deleteMutationLoading || editMutationLoading) && 
-            <div class="d-flex justify-content-center align-items-center add-tracker-spinner">
-               <div class="spinner-grow text-primary" role="status">
-                  <span class="sr-only">Loading...</span>
+            <div className="d-flex justify-content-center align-items-center add-tracker-spinner">
+               <div className="spinner-grow text-primary" role="status">
+                  <span className="sr-only">Loading...</span>
                </div>
-               <div class="spinner-grow text-success ml-4 mr-4" role="status">
-                  <span class="sr-only">Loading...</span>
+               <div className="spinner-grow text-success ml-4 mr-4" role="status">
+                  <span className="sr-only">Loading...</span>
                </div>
-               <div class="spinner-grow text-danger" role="status">
-                  <span class="sr-only">Loading...</span>
+               <div className="spinner-grow text-danger" role="status">
+                  <span className="sr-only">Loading...</span>
                </div>
             </div>
          }
 
          {(deleteMutationError|| editMutationError) && 
-            <div class="d-flex justify-content-center align-items-center error-message">
+            <div className="d-flex justify-content-center align-items-center error-message">
                <h1 className="text-danger">ERROR OCCURED, PLEASE REFRESH THE PAGE</h1>
             </div>
          }
@@ -169,7 +165,7 @@ const Card = ({cardData, refetchTracker}) => {
                      onChange={editNameInput}/>
 
                   <div className="input-group-append">
-                     <button 
+                     <button
                         className="btn btn-outline-secondary"
                         type="button" 
                         onClick={editTrack}
@@ -180,15 +176,33 @@ const Card = ({cardData, refetchTracker}) => {
             </div>
 
                {info.tags.map((val, index) => (
-                  <span className="input-group mb-3">
+                  <span key={index} className="input-group mb-3">
                   <input 
                      type="tag"
                      placeholder="Tag..."
                      className="form-control col-2"
                      value={val}
                      maxLength="10"
-                     onChange={(e) => editCardTag(e, index)}/>
+                     minLength="1"
+                     onChange={(e) => {
+                        const tempTags = [...info.tags];
+                        tempTags[index] = e.target.value;
+
+                        setInfo({
+                           ...info,
+                           tags: tempTags
+                        });
+                     }}/>
    
+                  <div className="input-group-append">
+                     <button 
+                        className="btn btn-outline-secondary"
+                        type="button" 
+                        onClick={() => editCardTag(index)}
+                        >Save
+                     </button>
+                  </div>
+
                   <div className="input-group-append">
                      <button 
                         className="btn btn-outline-secondary"
@@ -200,11 +214,10 @@ const Card = ({cardData, refetchTracker}) => {
                   </span>
                ))}
 
-
             <button 
                className="btn btn-success" 
                onClick={addNewTagToTrack} 
-               disabled={info.tags.length >=5}>
+               disabled={info.tags.length >= 4}>
                   Add New Tag +
                </button>
 
