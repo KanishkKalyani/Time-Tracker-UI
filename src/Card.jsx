@@ -32,29 +32,37 @@ const DELETE_TRACKER = gql`
    }`;
 
 
-const Card = ({cardData, refreshTracker}) => {
+const Card = ({cardData, refetchTracker}) => {
    const [info, setInfo] = useState(cardData);
 
    useEffect(() => {
       setInfo(cardData);
    },[cardData]);
 
-   const [editTrackerInfo] = useMutation(EDIT_TRACKER);
-   const [deleteTrackerInfo] = useMutation(DELETE_TRACKER);
+   const [
+      editTrackerInfo,
+      { loading: editMutationLoading, error: editMutationError }
+   ] = useMutation(EDIT_TRACKER);
 
-   const editTrack = () => {
-      editTrackerInfo({variables: {
+   const [
+      deleteTrackerInfo,
+      { loading: deleteMutationLoading, error: deleteMutationError }
+   ] = useMutation(DELETE_TRACKER);
+
+   const editTrack = async () => {
+      await editTrackerInfo({variables: {
          id: info.id,
          name: info.name,
          start: info.start,
          end: info.end
       }});
-      refreshTracker();
+
+      refetchTracker();
    };
 
-   const deleteTrack = () => {
-      deleteTrackerInfo({variables: {id: info.id}});
-      refreshTracker();
+   const deleteTrack = async () => {
+      await deleteTrackerInfo({variables: {id: info.id}});
+      refetchTracker();
    };
 
    const editNameInput = e => {
@@ -80,16 +88,17 @@ const Card = ({cardData, refreshTracker}) => {
       }
    };
 
-   const editStartTime = () => {
+   const editStartTime = async () => {
       const timeStr = new Date().toLocaleString();
 
-      editTrackerInfo({variables: {
+      await editTrackerInfo({variables: {
          id: info.id,
          name: info.name,
          start: timeStr,
          end: info.end
       }});
-      refreshTracker();
+
+      refetchTracker();
    }
 
    const editEndTime = () => {
@@ -128,6 +137,26 @@ const Card = ({cardData, refreshTracker}) => {
 
    return (
       <div className="card" style={{'width': '100%', 'marginTop': '10px'}}>
+         { (deleteMutationLoading || editMutationLoading) && 
+            <div class="d-flex justify-content-center align-items-center add-tracker-spinner">
+               <div class="spinner-grow text-primary" role="status">
+                  <span class="sr-only">Loading...</span>
+               </div>
+               <div class="spinner-grow text-success ml-4 mr-4" role="status">
+                  <span class="sr-only">Loading...</span>
+               </div>
+               <div class="spinner-grow text-danger" role="status">
+                  <span class="sr-only">Loading...</span>
+               </div>
+            </div>
+         }
+
+         {(deleteMutationError|| editMutationError) && 
+            <div class="d-flex justify-content-center align-items-center error-message">
+               <h1 className="text-danger">ERROR OCCURED, PLEASE REFRESH THE PAGE</h1>
+            </div>
+         }
+
          <div className="card-body">
             <div className="d-flex justify-content-between">
                <div className="input-group mb-3">
@@ -200,6 +229,7 @@ const Card = ({cardData, refreshTracker}) => {
 
                <button 
                   className="btn btn-danger" 
+                  disabled={!info.start || !info.end}
                   onClick={deleteTrack}>
                   Delete Track
                </button>

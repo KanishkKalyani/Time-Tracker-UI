@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import Card from './Card';
+import React, { useEffect, useState } from 'react';
+import Card from './Card.jsx';
 import { useMutation, gql } from "@apollo/client";
 
 const ADD_TRACKER = gql`
@@ -15,23 +15,50 @@ const ADD_TRACKER = gql`
       }
    }`
 
-const Home = ({ tracker, refreshTracker }) => {
+const Home = ({ tracker, refetchTracker }) => {
    const [name, setName] = useState('')
 
-   const [addTrackerInfo] = useMutation(ADD_TRACKER);
+   useEffect(() => {
+      refetchTracker();
+   }, [tracker]);
+
+   const [
+      addTrackerInfo,
+      { loading: mutationLoading, error: mutationError }
+   ] = useMutation(ADD_TRACKER);
 
    return (
       <div className="container">
+         {mutationLoading && 
+            <div class="d-flex justify-content-center align-items-center add-tracker-spinner">
+               <div class="spinner-grow text-primary" role="status">
+                  <span class="sr-only">Loading...</span>
+               </div>
+               <div class="spinner-grow text-success ml-4 mr-4" role="status">
+                  <span class="sr-only">Loading...</span>
+               </div>
+               <div class="spinner-grow text-danger" role="status">
+                  <span class="sr-only">Loading...</span>
+               </div>
+            </div>
+         }
+
+         {mutationError && 
+            <div class="d-flex justify-content-center align-items-center error-message">
+               <h1 className="text-danger">ERROR OCCURED, PLEASE REFRESH THE PAGE</h1>
+            </div>
+         }
+
          <h1 className="d-flex justify-content-center mb-3 text-danger">TRACKER</h1>
 
          <form 
             className="mb-5"
-            onSubmit={(e) => {
+            onSubmit={async (e) => {
                e.preventDefault();
                if (name) {
-                  addTrackerInfo({variables: {name}});
-                  refreshTracker();
-                  setName('')
+                  await addTrackerInfo({variables: {name}});
+                  await refetchTracker();
+                  setName('');
                }
             }}>
             <div className="form-group">
@@ -45,7 +72,7 @@ const Home = ({ tracker, refreshTracker }) => {
          </form>
 
          {tracker.map( (info) => (
-            <Card key={info.id} cardData={info} refreshTracker={refreshTracker}/>
+            <Card key={info.id} cardData={info} refetchTracker={refetchTracker}/>
          ))}
       </div>
    );
